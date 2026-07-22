@@ -8,19 +8,64 @@ class Crypto(commands.Cog):
 
     @discord.app_commands.command(
         name="hash",
-        description="Generate a SHA-256 hash from text."
+        description="Generate a hash from text using a selected algorithm."
     )
-    async def hash(self, interaction: discord.Interaction, text: str):
+    @discord.app_commands.describe(
+        text="Text to hash",
+        algorithm="Hash algorithm (sha256, sha512, sha1, md5, blake2b)"
+    )
+    async def hash(
+        self,
+        interaction: discord.Interaction,
+        text: str,
+        algorithm: str = "sha256"
+    ):
         import hashlib
 
-        hashed = hashlib.sha256(text.encode()).hexdigest()
+        algorithms = {
+            "sha256": hashlib.sha256,
+            "sha512": hashlib.sha512,
+            "sha1": hashlib.sha1,
+            "md5": hashlib.md5,
+            "blake2b": hashlib.blake2b
+        }
 
-        await interaction.response.send_message(
-            f"🔐 **SHA-256 Hash**\n\n"
-            f"**Input:**\n{text}\n\n"
-            f"**Hash:**\n`{hashed}`"
+        algorithm = algorithm.lower()
+
+        if algorithm not in algorithms:
+            await interaction.response.send_message(
+                "❌ Invalid algorithm.\n"
+                "Available: sha256, sha512, sha1, md5, blake2b"
+            )
+            return
+
+        hashed = algorithms[algorithm](text.encode()).hexdigest()
+
+        embed = discord.Embed(
+            title="🔐 Hash Generated",
+            color=discord.Color.blue()
         )
 
+        embed.add_field(
+            name="Algorithm",
+            value=algorithm.upper(),
+            inline=False
+        )
 
+        embed.add_field(
+            name="Input",
+            value=f"`{text}`",
+            inline=False
+        )
+
+        embed.add_field(
+            name="Hash",
+            value=f"`{hashed}`",
+            inline=False
+        )
+
+        await interaction.response.send_message(embed=embed)
+        
 async def setup(bot: commands.Bot):
     await bot.add_cog(Crypto(bot))
+    
