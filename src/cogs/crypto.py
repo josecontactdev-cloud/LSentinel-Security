@@ -66,6 +66,60 @@ class Crypto(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
         
+    @discord.app_commands.command(
+        name="hashfile",
+        description="Generate hashes from an uploaded file."
+    )
+    async def hashfile(
+        self,
+        interaction: discord.Interaction,
+        file: discord.Attachment
+    ):
+        import hashlib
+
+        data = await file.read()
+
+        sha256 = hashlib.sha256(data).hexdigest()
+        sha512 = hashlib.sha512(data).hexdigest()
+        md5 = hashlib.md5(data).hexdigest()
+
+        embed = discord.Embed(
+            title="📁 File Hash Generated",
+            color=discord.Color.green()
+        )
+
+        embed.add_field(
+            name="File",
+            value=file.filename,
+            inline=False
+        )
+
+        embed.add_field(
+            name="Size",
+            value=f"{file.size} bytes",
+            inline=False
+        )
+
+        embed.add_field(
+            name="SHA-256",
+            value=f"`{sha256}`",
+            inline=False
+        )
+
+        embed.add_field(
+            name="SHA-512",
+            value=f"`{sha512}`",
+            inline=False
+        )
+
+        embed.add_field(
+            name="MD5",
+            value=f"`{md5}`",
+            inline=False
+        )
+
+        await interaction.response.send_message(embed=embed)
+        
 async def setup(bot: commands.Bot):
     await bot.add_cog(Crypto(bot))
     
