@@ -1,17 +1,9 @@
-"""Application configuration helpers."""
-
-from __future__ import annotations
-
+from dotenv import load_dotenv
 import os
-from dataclasses import dataclass
 
+load_dotenv()
 
-@dataclass(frozen=True)
-class Settings:
-    """Minimal project settings container."""
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-    bot_token: str = os.getenv("BOT_TOKEN", "")
-    guild_id: int | None = None
-
-
-settings = Settings()
+if not DISCORD_TOKEN:
+    raise ValueError("DISCORD_TOKEN no encuentra el .env.")

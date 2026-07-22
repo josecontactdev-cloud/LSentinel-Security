@@ -1,12 +1,28 @@
-"""Entry point for the Discord bot application."""
+import discord
+from discord import app_commands
+from discord.ext import commands
 
-from __future__ import annotations
+from config import DISCORD_TOKEN
+
+intents = discord.Intents.default()
+
+bot = commands.Bot(
+    command_prefix="!",
+    intents=intents
+)
 
 
-def main() -> None:
-    """Start the bot application."""
-    print("Bot entry point initialized.")
+@bot.event
+async def on_ready():
+    await bot.tree.sync()
+    print(f"✅ Logged in as {bot.user}")
 
 
-if __name__ == "__main__":
-    main()
+@bot.tree.command(name="ping", description="Check the bot latency.")
+async def ping(interaction: discord.Interaction):
+    await interaction.response.send_message(
+        f"🏓 Pong! `{round(bot.latency * 1000)} ms`"
+    )
+
+
+bot.run(DISCORD_TOKEN)
