@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from utils.validators import Validator
+
 
 class Crypto(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -26,7 +28,8 @@ class Crypto(commands.Cog):
             "blake2b": hashlib.blake2b,
         }
 
-        algorithm = algorithm.lower()
+
+        algorithm = Validator.validate_hash_algorithm(algorithm)
 
         if algorithm not in algorithms:
             await interaction.response.send_message(
