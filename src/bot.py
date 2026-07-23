@@ -4,15 +4,15 @@ from pathlib import Path
 import discord
 from discord.ext import commands
 
-# Load the bot token from config.py (.env)
-from config import DISCORD_TOKEN
+from core.config import Config
+from core.logger import get_logger
+
+logger = get_logger(__name__)
 
 # Enable only the default gateway intents.
-# Additional intents will be enabled as new features are added.
 intents = discord.Intents.default()
 
 # Main bot instance.
-# commands.Bot is the foundation that manages events, commands, and extensions.
 bot = commands.Bot(
     command_prefix="!",
     intents=intents
@@ -21,18 +21,14 @@ bot = commands.Bot(
 
 @bot.event
 async def on_ready():
-    # Register all slash commands with Discord.
-    # This ensures any new commands become available.
+    """Executed when the bot successfully connects to Discord."""
     await bot.tree.sync()
+    logger.info(f"Logged in as {bot.user}")
 
-    print(f"✅ Logged in as {bot.user}")
 
+async def load_extensions() -> None:
+    """Automatically load every Cog inside the cogs directory."""
 
-async def load_extensions():
-    """
-    Automatically load every Cog inside the cogs directory.
-    Any new .py file will be loaded without modifying bot.py.
-    """
     cogs_path = Path(__file__).parent / "cogs"
 
     for cog in cogs_path.glob("*.py"):
@@ -40,18 +36,18 @@ async def load_extensions():
             continue
 
         await bot.load_extension(f"cogs.{cog.stem}")
-        print(f"✅ Loaded extension: {cog.stem}")
+        logger.info(f"Loaded extension: {cog.stem}")
 
 
-async def main():
-    # Keep the bot alive inside a managed asynchronous context.
+async def main() -> None:
+    """Application entry point."""
+
+    Config.validate()
+
     async with bot:
         await load_extensions()
-
-        # Connect to Discord using the token stored in .env.
-        await bot.start(DISCORD_TOKEN)
+        await bot.start(Config.DISCORD_TOKEN)
 
 
-# Application entry point.
-# Starts the asynchronous event loop.
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
