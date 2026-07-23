@@ -13,10 +13,7 @@ logger = get_logger(__name__)
 intents = discord.Intents.default()
 
 # Main bot instance.
-bot = commands.Bot(
-    command_prefix="!",
-    intents=intents
-)
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 @bot.event

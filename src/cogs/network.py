@@ -10,17 +10,10 @@ class Network(commands.Cog):
         self.bot = bot
 
     @discord.app_commands.command(
-        name="iplookup",
-        description="Get public information about an IP address."
+        name="iplookup", description="Get public information about an IP address."
     )
-    @discord.app_commands.describe(
-        ip="IP address to lookup"
-    )
-    async def iplookup(
-        self,
-        interaction: discord.Interaction,
-        ip: str
-    ):
+    @discord.app_commands.describe(ip="IP address to lookup")
+    async def iplookup(self, interaction: discord.Interaction, ip: str):
         await interaction.response.defer()
 
         try:
@@ -31,92 +24,58 @@ class Network(commands.Cog):
                     data = await response.json()
 
             if not data.get("success"):
-                await interaction.followup.send(
-                    "❌ Invalid IP address."
-                )
+                await interaction.followup.send("❌ Invalid IP address.")
                 return
 
-            embed = discord.Embed(
-                title="🌐 IP Information",
-                color=discord.Color.blue()
-            )
+            embed = discord.Embed(title="🌐 IP Information", color=discord.Color.blue())
+
+            embed.add_field(name="IP", value=data.get("ip", "Unknown"), inline=False)
 
             embed.add_field(
-                name="IP",
-                value=data.get("ip", "Unknown"),
-                inline=False
+                name="Country", value=data.get("country", "Unknown"), inline=True
             )
 
-            embed.add_field(
-                name="Country",
-                value=data.get("country", "Unknown"),
-                inline=True
-            )
-
-            embed.add_field(
-                name="City",
-                value=data.get("city", "Unknown"),
-                inline=True
-            )
+            embed.add_field(name="City", value=data.get("city", "Unknown"), inline=True)
 
             embed.add_field(
                 name="ISP",
                 value=data.get("connection", {}).get("isp", "Unknown"),
-                inline=False
+                inline=False,
             )
 
             embed.add_field(
                 name="Organization",
                 value=data.get("connection", {}).get("org", "Unknown"),
-                inline=False
+                inline=False,
             )
 
             embed.add_field(
                 name="ASN",
                 value=data.get("connection", {}).get("asn", "Unknown"),
-                inline=False
+                inline=False,
             )
 
             await interaction.followup.send(embed=embed)
 
         except Exception as e:
-            await interaction.followup.send(
-                f"❌ Error:\n`{e}`"
-            )
+            await interaction.followup.send(f"❌ Error:\n`{e}`")
 
     @discord.app_commands.command(
-        name="dnslookup",
-        description="Lookup DNS records of a domain."
+        name="dnslookup", description="Lookup DNS records of a domain."
     )
-    @discord.app_commands.describe(
-        domain="Domain to query"
-    )
-    async def dnslookup(
-        self,
-        interaction: discord.Interaction,
-        domain: str
-    ):
+    @discord.app_commands.describe(domain="Domain to query")
+    async def dnslookup(self, interaction: discord.Interaction, domain: str):
         await interaction.response.defer()
 
-        record_types = [
-            "A",
-            "AAAA",
-            "MX",
-            "TXT",
-            "NS"
-        ]
+        record_types = ["A", "AAAA", "MX", "TXT", "NS"]
 
         embed = discord.Embed(
-            title=f"🌐 DNS Lookup: {domain}",
-            color=discord.Color.blue()
+            title=f"🌐 DNS Lookup: {domain}", color=discord.Color.blue()
         )
 
         for record in record_types:
             try:
-                answers = dns.resolver.resolve(
-                    domain,
-                    record
-                )
+                answers = dns.resolver.resolve(domain, record)
 
                 values = []
 
@@ -124,20 +83,14 @@ class Network(commands.Cog):
                     values.append(str(answer))
 
                 embed.add_field(
-                    name=record,
-                    value="\n".join(values)[:1024],
-                    inline=False
+                    name=record, value="\n".join(values)[:1024], inline=False
                 )
 
             except Exception:
-                embed.add_field(
-                    name=record,
-                    value="No records found",
-                    inline=False
-                )
+                embed.add_field(name=record, value="No records found", inline=False)
 
         await interaction.followup.send(embed=embed)
-            
+
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(Network(bot))
-    

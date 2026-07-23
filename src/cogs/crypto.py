@@ -7,18 +7,14 @@ class Crypto(commands.Cog):
         self.bot = bot
 
     @discord.app_commands.command(
-        name="hash",
-        description="Generate a hash from text using a selected algorithm."
+        name="hash", description="Generate a hash from text using a selected algorithm."
     )
     @discord.app_commands.describe(
         text="Text to hash",
-        algorithm="Hash algorithm (sha256, sha512, sha1, md5, blake2b)"
+        algorithm="Hash algorithm (sha256, sha512, sha1, md5, blake2b)",
     )
     async def hash(
-        self,
-        interaction: discord.Interaction,
-        text: str,
-        algorithm: str = "sha256"
+        self, interaction: discord.Interaction, text: str, algorithm: str = "sha256"
     ):
         import hashlib
 
@@ -27,7 +23,7 @@ class Crypto(commands.Cog):
             "sha512": hashlib.sha512,
             "sha1": hashlib.sha1,
             "md5": hashlib.md5,
-            "blake2b": hashlib.blake2b
+            "blake2b": hashlib.blake2b,
         }
 
         algorithm = algorithm.lower()
@@ -41,39 +37,21 @@ class Crypto(commands.Cog):
 
         hashed = algorithms[algorithm](text.encode()).hexdigest()
 
-        embed = discord.Embed(
-            title="🔐 Hash Generated",
-            color=discord.Color.blue()
-        )
+        embed = discord.Embed(title="🔐 Hash Generated", color=discord.Color.blue())
 
-        embed.add_field(
-            name="Algorithm",
-            value=algorithm.upper(),
-            inline=False
-        )
+        embed.add_field(name="Algorithm", value=algorithm.upper(), inline=False)
 
-        embed.add_field(
-            name="Input",
-            value=f"`{text}`",
-            inline=False
-        )
+        embed.add_field(name="Input", value=f"`{text}`", inline=False)
 
-        embed.add_field(
-            name="Hash",
-            value=f"`{hashed}`",
-            inline=False
-        )
+        embed.add_field(name="Hash", value=f"`{hashed}`", inline=False)
 
         await interaction.response.send_message(embed=embed)
-        
+
     @discord.app_commands.command(
-        name="hashfile",
-        description="Generate hashes from an uploaded file."
+        name="hashfile", description="Generate hashes from an uploaded file."
     )
     async def hashfile(
-        self,
-        interaction: discord.Interaction,
-        file: discord.Attachment
+        self, interaction: discord.Interaction, file: discord.Attachment
     ):
         import hashlib
 
@@ -84,42 +62,21 @@ class Crypto(commands.Cog):
         md5 = hashlib.md5(data).hexdigest()
 
         embed = discord.Embed(
-            title="📁 File Hash Generated",
-            color=discord.Color.green()
+            title="📁 File Hash Generated", color=discord.Color.green()
         )
 
-        embed.add_field(
-            name="File",
-            value=file.filename,
-            inline=False
-        )
+        embed.add_field(name="File", value=file.filename, inline=False)
 
-        embed.add_field(
-            name="Size",
-            value=f"{file.size} bytes",
-            inline=False
-        )
+        embed.add_field(name="Size", value=f"{file.size} bytes", inline=False)
 
-        embed.add_field(
-            name="SHA-256",
-            value=f"`{sha256}`",
-            inline=False
-        )
+        embed.add_field(name="SHA-256", value=f"`{sha256}`", inline=False)
 
-        embed.add_field(
-            name="SHA-512",
-            value=f"`{sha512}`",
-            inline=False
-        )
+        embed.add_field(name="SHA-512", value=f"`{sha512}`", inline=False)
 
-        embed.add_field(
-            name="MD5",
-            value=f"`{md5}`",
-            inline=False
-        )
+        embed.add_field(name="MD5", value=f"`{md5}`", inline=False)
 
         await interaction.response.send_message(embed=embed)
-        
+
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(Crypto(bot))
-    
