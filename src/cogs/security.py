@@ -1,8 +1,8 @@
-import discord
-import ssl
 import socket
+import ssl
 from datetime import datetime
 
+import discord
 from discord.ext import commands
 
 

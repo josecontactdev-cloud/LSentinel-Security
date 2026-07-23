@@ -1,5 +1,4 @@
 import discord
-
 from discord.ext import commands
 
 from services.network_service import NetworkService

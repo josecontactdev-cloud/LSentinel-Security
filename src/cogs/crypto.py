@@ -28,7 +28,6 @@ class Crypto(commands.Cog):
             "blake2b": hashlib.blake2b,
         }
 
-
         algorithm = Validator.validate_hash_algorithm(algorithm)
 
         if algorithm not in algorithms:

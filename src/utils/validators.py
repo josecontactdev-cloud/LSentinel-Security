@@ -23,8 +23,8 @@ class Validator:
         try:
             ipaddress.ip_address(ip)
             return ip
-        except ValueError:
-            raise ValidationError(f"Invalid IP address: {ip}")
+        except ValueError as err:
+            raise ValidationError(f"Invalid IP address: {ip}") from err
 
     @staticmethod
     def validate_hash_algorithm(algorithm: str) -> str:
